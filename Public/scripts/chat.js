@@ -1,7 +1,7 @@
 function Chat(host) {
     var chat = this;
 
-    chat.ws = new WebSocket('wss://' + host + ':443');
+    chat.ws = new WebSocket('wss://' + host);
     chat.ws.onopen = function() {
         chat.askUsername();
     };

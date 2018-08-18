@@ -46,7 +46,7 @@ Hope you like it :)
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 <script src="scripts/chat.js"></script>
 <script>
-var chat = new Chat(window.location.host + "/chat");
+var chat = new Chat(window.location.host + ":443/chat");
 </script>
 </body>
 </html>
