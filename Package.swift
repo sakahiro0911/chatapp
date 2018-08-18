@@ -12,6 +12,8 @@ let package = Package(
         // 🍃 An expressive, performant, and extensible templating language built for Swift.
         .package(url: "https://github.com/vapor/leaf.git", from: "3.0.0"),
         
+        .package(url: "https://github.com/vapor/console.git", from: "3.0.0"),
+        
         // .package(url: "https://github.com/vapor/json.git", from: "2.2.2"),
         // .package(url: "https://github.com/vapor/node.git", from: "2.1.5"),
          
@@ -19,7 +21,7 @@ let package = Package(
         
     ],
     targets: [
-        .target(name: "App", dependencies: ["Leaf", "Vapor"],exclude: ["Config","Database","Public","Resources"]),
+        .target(name: "App", dependencies: ["Leaf", "Vapor","Logging"],exclude: ["Config","Database","Public","Resources"]),
         .target(name: "Run", dependencies: ["App"],exclude: ["Config","Database","Public","Resources"]),
         .testTarget(name: "AppTests", dependencies: ["App"],exclude: ["Config","Database","Public","Resources"])
     ]
