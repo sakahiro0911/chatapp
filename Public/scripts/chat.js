@@ -1,6 +1,7 @@
 function Chat(host) {
     var chat = this;
     hostname = host;
+    loginname = "";
     
     disconnectflg = false;;
     reconnectflg = false;
@@ -12,10 +13,10 @@ function Chat(host) {
     };
 
     chat.askUsername = function() {
-        var name = prompt('ユーザー名を入力して下さい。');
+        loginname = prompt('ユーザー名を入力して下さい。');
 
-        $.get('https://api.github.com/users/' + name, function(data) {
-            chat.join(name);
+        $.get('https://api.github.com/users/' + loginname, function(data) {
+            chat.join(loginname);
         }).fail(function() {
             alert('Invalid username');
             chat.askUsername();
@@ -94,11 +95,13 @@ function Chat(host) {
     }
 
     chat.reconnect = function() {
+        reconnectflg = true;
         console.log("reconnet method");
         chat.ws = new WebSocket('wss://' + hostname);
         chat.ws.onopen = function() {
             console.log("onopen");
-            chat.askUsername();
+//            chat.askUsername();
+            chat.join(loginname);
         };
         chat.ws.onmessage = function(event) {
             console.log("data=" + event.data);
@@ -139,6 +142,13 @@ function Chat(host) {
             .addClass('new');
 
         if (username) {
+            
+            if (reconnectflg == true && message.indexOf(loginname) == 0) {
+                console.log("reonnect bot skip:" + message);
+                return;
+            }
+            
+            
             var lookup = username;
 
             if (lookup == 'Bot') {
