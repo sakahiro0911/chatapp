@@ -38,7 +38,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //        pingTimer?.scheduleRepeating(deadline: .now(), interval: .seconds(25))
 //        pingTimer?.setEventHandler { try? ws.ping() }
 //        pingTimer?.resume()
-        
+        print("websocket get")
         
        var username: String? = nil
         
