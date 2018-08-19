@@ -49,7 +49,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
         ws.onText({ (ws, text) in
             
             
-            ws.send("OK \(text)")
+            ws.send("\(text)")
             
             
             print("onText=\(text)")
