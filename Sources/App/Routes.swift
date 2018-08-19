@@ -1,8 +1,16 @@
 import Vapor
+import Foundation
+
 //import Leaf
 
 
 let room = Room()
+
+
+struct Chatdata: Codable {  // Codableインターフェースを実装する
+    let username: String?
+    let message: String?
+}
 
 
 /// Register your application's routes here.
@@ -58,16 +66,21 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
           
 //                       let json = try JSONSerialization.jsonObject(with: text!, options: JSONSerialization.ReadingOptions.mutableContainers) as!
             do {
-            let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
-               ws.send("json")
+//            let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
+//
+                let json = try! JSONDecoder().decode(Chatdata.self, from: data!)
                 
-            if let u = (json["username"] as? String) {
+               ws.send("json")
+            
+//             if let u = (json["username"] as? String) {
+            if let u = json.username {
                 print("username(save)=\(u)")
                 username = u
                 room.connections[u] = ws
                 room.bot("\(u) が参加しました。 👋")
             }
-            if let u = username, let m = (json["message"] as? String) {
+//            if let u = username, let m = (json["message"] as? String) {
+            if let u = username, let m = json.message {
                 print("message=\(m)")
                 if m == "disconnect" {
                     room.bot("\(u) が退出しました。")
