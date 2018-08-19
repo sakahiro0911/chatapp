@@ -24,7 +24,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //    }
 
     router.get("/") { req in
-            return try req.view().render("welcome")
+         return try req.view().render("welcome")
     }
     
    
