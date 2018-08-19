@@ -1,6 +1,6 @@
 function Chat(host) {
     var chat = this;
-    var hostname = host;
+    hostname = host;
     
     disconnectflg = false;;
     reconnectflg = false;
