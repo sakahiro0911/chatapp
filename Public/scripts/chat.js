@@ -3,6 +3,8 @@ function Chat(host) {
     hostname = host;
     loginname = "";
     
+    array = [];
+    
     disconnectflg = false;;
     reconnectflg = false;
 
@@ -148,10 +150,46 @@ function Chat(host) {
                 return;
             }
             
+
             
             var lookup = username;
 
             if (lookup == 'Bot') {
+                
+                
+                
+                
+                
+                if (message.indexOf(loginname) < 0) {
+                    var start = message.indexOf("が参加しました。");
+                    var end = message.indexOf("が退出しました。");
+                    var u = "";
+                    if (start >0) {
+                        u = message.substr(0,start);
+                        if (array.indexOf(u) < 0) {
+                            array.push(u);
+                            console.log(u + " push");
+                        } else {
+                            console.log(u + " exist return");
+                            return;
+                        }
+                    }
+                    if (end >0) {
+                        u = message.substr(0,end);
+                        if (array.indexOf(u) >= 0) {
+                            array.splice( array.indexOf(u), 1 );
+                            console.log(u + " del");
+                        }
+                    }
+                    console.log("u=" + u);
+                    //                if (array.indexOf(message))
+                }
+                
+                
+                
+                
+                
+                
                 lookup = 'qutheory';
             }
             bubble.attr('data-username', lookup);
