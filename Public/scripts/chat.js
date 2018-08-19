@@ -85,13 +85,16 @@ function Chat(host) {
         console.log("Close Code = " + e.code);
         console.log("Close Reason = " + e.reason);
         if (disconnectflg == false) {
-            console.log("reconnet");
+            console.log("reconnet start");
             chat.ws = null;
-            setTimeout("chat.ws = new WebSocket('wss://' + hostname);", 2000);
+            setTimeout(chat.reconnect, 2000);
         }
     }
 
-            
+    chat.reconnect = function() {
+        console.log("reconnet method");
+        chat.ws = new WebSocket('wss://' + hostname);
+    }
             
     
     chat.send = function(message) {
