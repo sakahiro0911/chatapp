@@ -75,10 +75,12 @@ function Chat(host) {
         }
     }
 
-    chat.ws.onclose = function(event) {
-        console.log("onclose");
+   
+    chat.ws.onclose = function (e) {
+        console.log("Close Code = " + e.code);
+        console.log("Close Reason = " + e.reason);
     }
-            
+
             
             
     
