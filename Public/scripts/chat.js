@@ -1,7 +1,7 @@
 function Chat(host) {
     var chat = this;
 
-    chat.ws = new WebSocket('ws://' + host);
+    chat.ws = new WebSocket('wss://' + host);
     chat.ws.onopen = function() {
         chat.askUsername();
     };
@@ -65,12 +65,12 @@ function Chat(host) {
     
     chat.ws.onmessage = function(event) {
         console.log("data=" + event.data);
-        var message = JSON.parse(event.data);
-        console.log('[' + name + '] ' + message);
-        if (message == 'disconnect') {
+        if (event.data == 'disconnect') {
             chat.ws.close();
         } else {
-           chat.bubble(message.message, message.username);
+          var message = JSON.parse(event.data);
+//        console.log('[' + name + '] ' + message);
+          chat.bubble(message.message, message.username);
         }
     }
 
