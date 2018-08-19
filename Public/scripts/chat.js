@@ -7,6 +7,7 @@ function Chat(host) {
 
     chat.ws = new WebSocket('wss://' + host);
     chat.ws.onopen = function() {
+        console.log("onopen");
         chat.askUsername();
     };
 
@@ -87,13 +88,40 @@ function Chat(host) {
         if (disconnectflg == false) {
             console.log("reconnet start");
             chat.ws = null;
-            setTimeout(chat.reconnect, 2000);
+            chat.reconnect();
+//            setTimeout(chat.reconnect, 2000);
         }
     }
 
     chat.reconnect = function() {
         console.log("reconnet method");
         chat.ws = new WebSocket('wss://' + hostname);
+        chat.ws.onopen = function() {
+            console.log("onopen");
+            chat.askUsername();
+        };
+        chat.ws.onmessage = function(event) {
+            console.log("data=" + event.data);
+            if (event.data == 'disconnect') {
+                console.log("disconnect")
+                chat.ws.close();
+            } else {
+                var message = JSON.parse(event.data);
+                //        console.log('[' + name + '] ' + message);
+                chat.bubble(message.message, message.username);
+            }
+        };
+        chat.ws.onclose = function (e) {
+            console.log("Close Code = " + e.code);
+            console.log("Close Reason = " + e.reason);
+            if (disconnectflg == false) {
+                console.log("reconnet start");
+                chat.ws = null;
+                chat.reconnect();
+                //            setTimeout(chat.reconnect, 2000);
+            }
+        };
+
     }
             
     
