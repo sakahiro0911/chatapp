@@ -154,6 +154,7 @@ function Chat(host) {
     }
 
     chat.join = function(name) {
+        console.log("join name=" + name);
         chat.ws.send(JSON.stringify({
             'username': name
         }));

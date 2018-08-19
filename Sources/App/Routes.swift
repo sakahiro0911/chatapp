@@ -47,6 +47,11 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //        })
         
         ws.onText({ (ws, text) in
+            
+            
+            ws.send("OK \(text)")
+            
+            
             print("onText=\(text)")
             let data: Data? = text.data(using: .utf8)
 //                       let json = try JSONSerialization.jsonObject(with: text!, options: JSONSerialization.ReadingOptions.mutableContainers) as!
