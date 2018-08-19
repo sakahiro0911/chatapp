@@ -1,5 +1,9 @@
 function Chat(host) {
     var chat = this;
+    var hostname = host;
+    
+    disconnectflg = false;;
+    reconnectflg = false;
 
     chat.ws = new WebSocket('wss://' + host);
     chat.ws.onopen = function() {
@@ -35,6 +39,7 @@ function Chat(host) {
 
     
     $(window).on("beforeunload", function(e) {
+                 disconnectflg = true;
                  chat.ws.send(JSON.stringify({
                                              'message': 'disconnect'
                                              }));
@@ -79,6 +84,11 @@ function Chat(host) {
     chat.ws.onclose = function (e) {
         console.log("Close Code = " + e.code);
         console.log("Close Reason = " + e.reason);
+        if (disconnectflg == false) {
+            consolo.log("reconnet");
+            chat.ws = null;
+            setTimeout("chat.ws = new WebSocket('wss://' + hostname);", 2000);
+        }
     }
 
             
