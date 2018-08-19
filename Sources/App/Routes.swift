@@ -49,7 +49,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
         ws.onText({ (ws, text) in
             
             
-            ws.send("\(text)")
+//            ws.send("\(text)")
             
             
             print("onText=\(text)")
@@ -76,6 +76,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                 }
             }
             } catch {
+                ws.send("json error:\(error)")
                 print ("json error")
                 return
             }

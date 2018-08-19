@@ -64,7 +64,7 @@ function Chat(host) {
     
     
     chat.ws.onmessage = function(event) {
-        console.log();
+        console.log("data=" + event.data);
         var message = JSON.parse(event);
         console.log('[' + name + '] ' + message);
         if (message == 'disconnect') {
