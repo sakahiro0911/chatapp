@@ -117,15 +117,15 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
        
       
         
-        ws.onCloseCode({ (code) in
-            print("onCloseCode:\(code)")
-            guard let u = username else {
-                return
-            }
-            print("close:\(u)")
-            room.bot("\(u) が退出しました。")
-            room.connections.removeValue(forKey: u)
-        })
+//        ws.onCloseCode({ (code) in
+//            print("onCloseCode:\(code)")
+//            guard let u = username else {
+//                return
+//            }
+//            print("close:\(u)")
+//            room.bot("\(u) が退出しました。")
+//            room.connections.removeValue(forKey: u)
+//        })
         
         
         

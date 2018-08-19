@@ -66,6 +66,7 @@ function Chat(host) {
     chat.ws.onmessage = function(event) {
         console.log("data=" + event.data);
         if (event.data == 'disconnect') {
+            console.log("disconnect")
             chat.ws.close();
         } else {
           var message = JSON.parse(event.data);
@@ -74,6 +75,13 @@ function Chat(host) {
         }
     }
 
+    chat.ws.onclose = function(event) {
+        console.log("onclose");
+    }
+            
+            
+            
+    
     chat.send = function(message) {
         chat.ws.send(JSON.stringify({
             'message': message
