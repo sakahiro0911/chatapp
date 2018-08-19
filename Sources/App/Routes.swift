@@ -70,7 +70,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //
                 let json = try! JSONDecoder().decode(Chatdata.self, from: data!)
                 
-               ws.send("json")
+                ws.send("json name:\(json.username)")
             
 //             if let u = (json["username"] as? String) {
             if let u = json.username {
