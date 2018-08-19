@@ -131,13 +131,27 @@ function Chat(host) {
             
     
     chat.send = function(message) {
-        chat.ws.send(JSON.stringify({
-            'message': message
-        }));
-
-        chat.bubble(message);
+        if ( chat.ws.readyState === WebSocket.OPEN ) {
+//            chat.ws.send(JSON.stringify({
+//            'message': message
+//            }));
+//            chat.bubble(message);
+            chat.sendmessage(message);
+        } else {
+            console.log("ready state:" + chat.ws.readyState);
+            setTimeout(function(){chat.sendmessage(message)}, 3000);
+        }
     }
 
+    chat.sendmessage = function(message) {
+        console.log("send message:" + message);
+        chat.ws.send(JSON.stringify({
+                                    'message': message
+                                    }));
+        chat.bubble(message);
+    }
+    
+    
     chat.bubble = function(message, username) {
         var bubble = $('<div>')
             .addClass('message')
