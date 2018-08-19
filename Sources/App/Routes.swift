@@ -50,12 +50,14 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
             
             
 //            ws.send("\(text)")
-          do {
+//          do {
             
-            print("onText=\(text)")
+//            print("onText=\(text)")
             let data: Data? = text.data(using: .utf8)
+            
+             ws.send("data=\(data!)")
 //                       let json = try JSONSerialization.jsonObject(with: text!, options: JSONSerialization.ReadingOptions.mutableContainers) as!
-//            do {
+            do {
             let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
             
             if let u = (json["username"] as? String) {
