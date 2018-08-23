@@ -12,6 +12,12 @@ struct Chatdata: Codable {  // Codableインターフェースを実装する
     let message: String?
 }
 
+//extension WebSocket {
+//    public func optSend(_ data: LosslessDataConvertible, opcode: WebSocketOpcode, promise: Promise<Void>?) {
+//        send(data, opcode: opcode, promise: promise)
+//       
+//    }
+//}
 
 /// Register your application's routes here.
 public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
@@ -35,19 +41,29 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
          return try req.view().render("welcome")
     }
     
+    
+//    router.websocket("foo") { (req, ws) in
+//        ws.onString { websocket, string in
+//            websocket.send(string: string)
+//        }
+//    }
+
+    
+    
    
 //   wss.get(at: ["chat"], use: <#T##(WebSocket, Request) throws -> ()#>)
     
     wss.get(at:["chat"], use:{ ws,req in
 //        var pingTimer: DispatchSourceTimer? = nil
-//        var username: String? = nil
+////        var username: String? = nil
 //
 //        pingTimer = DispatchSource.makeTimerSource()
 //        pingTimer?.scheduleRepeating(deadline: .now(), interval: .seconds(25))
-//        pingTimer?.setEventHandler { try? ws.ping() }
+////        pingTimer?.setEventHandler { try? ws.ping() }
+//        pingTimer?.setEventHandler { try? ws.send(Collection, promise: <#T##EventLoopPromise<Void>?#>)}
 //        pingTimer?.resume()
-        print("websocket get")
-        
+//        print("websocket get")
+//
        var username: String? = nil
         
 //        ws.onText({ (ws, text) in
