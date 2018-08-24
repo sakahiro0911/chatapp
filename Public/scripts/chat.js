@@ -75,8 +75,13 @@ function Chat(host) {
     chat.ws.onmessage = function(event) {
         console.log("data=" + event.data);
         if (event.data == 'disconnect') {
-            console.log("disconnect")
+            console.log("disconnect");
             chat.ws.close();
+        } else if (event.data == '__ping__') {
+            console.log("ping");
+            chat.ws.send(JSON.stringify({
+                 'message': '__pong__'
+            }));
         } else {
           var message = JSON.parse(event.data);
 //        console.log('[' + name + '] ' + message);

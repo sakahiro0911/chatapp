@@ -54,16 +54,31 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //   wss.get(at: ["chat"], use: <#T##(WebSocket, Request) throws -> ()#>)
     
     wss.get(at:["chat"], use:{ ws,req in
-//        var pingTimer: DispatchSourceTimer? = nil
+        
+        
+        var eventHandler: (() -> Void)?
+        
+        
+        var pingTimer: DispatchSourceTimer? = nil
 ////        var username: String? = nil
-//
+
 //        pingTimer = DispatchSource.makeTimerSource()
-//        pingTimer?.scheduleRepeating(deadline: .now(), interval: .seconds(25))
-////        pingTimer?.setEventHandler { try? ws.ping() }
-//        pingTimer?.setEventHandler { try? ws.send(Collection, promise: <#T##EventLoopPromise<Void>?#>)}
+//        pingTimer?.schedule(deadline: .now(), repeating: .seconds(25))  //, leeway:  .seconds(25))
+////        eventHandler =  {
+////            ws.send("__ping__")
+////            print("__ping__")
+////        }
+////        pingTimer?.setEventHandler { try? ws.ping() }    ★ws.send("__ping__")
+////        pingTimer?.setEventHandler(handler: {
+////            eventHandler?()
+////        })
+//        pingTimer?.setEventHandler {
+//            ws.send("__ping__")
+//            print("__ping__")
+//        }
 //        pingTimer?.resume()
 //        print("websocket get")
-//
+
        var username: String? = nil
         
 //        ws.onText({ (ws, text) in
@@ -94,6 +109,27 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                 username = u
                 room.connections[u] = ws
                 room.bot("\(u) が参加しました。 👋")
+                
+                pingTimer = DispatchSource.makeTimerSource()
+                pingTimer?.schedule(deadline: .now(), repeating: .seconds(25))  //, leeway:  .seconds(25))
+                eventHandler =  {
+                    ws.send("__ping__")
+                    print("__ping__")
+                }
+                //        pingTimer?.setEventHandler { try? ws.ping() }    ★ws.send("__ping__")
+                pingTimer?.setEventHandler(handler: {
+                    eventHandler?()
+                })
+                //        pingTimer?.setEventHandler {
+                //            ws.send("__ping__")
+                //            print("__ping__")
+                //        }
+                pingTimer?.resume()
+                print("websocket timer start")
+
+                
+                
+                
             }
 //            if let u = username, let m = (json["message"] as? String) {
             if let u = username, let m = json.message {
@@ -102,7 +138,14 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                     room.bot("\(u) が退出しました。")
                     room.connections.removeValue(forKey: u)
                     print("\(u) disconnect")
+                    pingTimer?.setEventHandler {}
+                    pingTimer?.cancel()
+                    //                    pingTimer?.resume()
+                    eventHandler = nil
+                    pingTimer = nil
                     ws.send("disconnect")
+                } else if  m == "__pong__" {
+                    print("\(u) pong")
                 } else {
                   room.send(name: u, message: m)
                 }
@@ -133,15 +176,20 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
        
       
         
-//        ws.onCloseCode({ (code) in
-//            print("onCloseCode:\(code)")
+        ws.onCloseCode({ (code) in
+            print("onCloseCode:\(code)")
+            pingTimer?.setEventHandler {}
+            pingTimer?.cancel()
+            //                    pingTimer?.resume()
+            eventHandler = nil
+            pingTimer = nil
 //            guard let u = username else {
 //                return
 //            }
 //            print("close:\(u)")
 //            room.bot("\(u) が退出しました。")
 //            room.connections.removeValue(forKey: u)
-//        })
+        })
         
         
         
