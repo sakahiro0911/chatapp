@@ -7,23 +7,72 @@ function Chat(host) {
     
     disconnectflg = false;;
     reconnectflg = false;
-
-    chat.ws = new WebSocket('wss://' + host);
-    chat.ws.onopen = function() {
-        console.log("onopen");
-        chat.askUsername();
-    };
-
+    
+    
+    
+    
+    chat.ws;
     chat.askUsername = function() {
         loginname = prompt('ユーザー名を入力して下さい。');
-
+        
         $.get('https://api.github.com/users/' + loginname, function(data) {
-            chat.join(loginname);
-        }).fail(function() {
-            alert('Invalid username');
-            chat.askUsername();
-        });
+              chat.ws = new WebSocket('wss://' + host);
+              chat.ws.onopen = function() {
+                console.log("onopen");
+              
+              
+              chat.ws.onmessage = function(event) {
+              console.log("data=" + event.data);
+              if (event.data == 'disconnect') {
+              console.log("disconnect");
+              chat.ws.close();
+              } else if (event.data == '__ping__') {
+              console.log("ping");
+              chat.ws.send(JSON.stringify({
+                                          'message': '__pong__'
+                                          }));
+              } else {
+              var message = JSON.parse(event.data);
+              chat.bubble(message.message, message.username);
+              }
+              }
+              chat.ws.onclose = function (e) {
+              console.log("Close Code = " + e.code);
+              console.log("Close Reason = " + e.reason);
+              if (disconnectflg == false) {
+              console.log("reconnet start");
+              chat.ws = null;
+              chat.reconnect();
+              }
+              }
+              
+         
+                chat.join(loginname);
+              };
+              
+         }).fail(function() {
+                      alert('Invalid username');
+                      chat.askUsername();
+                      });
     }
+//    chat.askUsername();
+    
+//    chat.ws = new WebSocket('ws://' + host);
+//    chat.ws.onopen = function() {
+//        console.log("onopen");
+//        chat.askUsername();
+//    };
+   
+//    chat.askUsername = function() {
+//        loginname = prompt('ユーザー名を入力して下さい。');
+//
+//        $.get('https://api.github.com/users/' + loginname, function(data) {
+//            chat.join(loginname);
+//        }).fail(function() {
+//            alert('Invalid username');
+//            chat.askUsername();
+//        });
+//    }
 
     chat.imageCache = {};
 
@@ -72,34 +121,32 @@ function Chat(host) {
     
     
     
-    chat.ws.onmessage = function(event) {
-        console.log("data=" + event.data);
-        if (event.data == 'disconnect') {
-            console.log("disconnect");
-            chat.ws.close();
-        } else if (event.data == '__ping__') {
-            console.log("ping");
-            chat.ws.send(JSON.stringify({
-                 'message': '__pong__'
-            }));
-        } else {
-          var message = JSON.parse(event.data);
-//        console.log('[' + name + '] ' + message);
-          chat.bubble(message.message, message.username);
-        }
-    }
-
-   
-    chat.ws.onclose = function (e) {
-        console.log("Close Code = " + e.code);
-        console.log("Close Reason = " + e.reason);
-        if (disconnectflg == false) {
-            console.log("reconnet start");
-            chat.ws = null;
-            chat.reconnect();
-//            setTimeout(chat.reconnect, 2000);
-        }
-    }
+//    chat.ws.onmessage = function(event) {
+//        console.log("data=" + event.data);
+//        if (event.data == 'disconnect') {
+//            console.log("disconnect");
+//            chat.ws.close();
+//        } else if (event.data == '__ping__') {
+//            console.log("ping");
+//            chat.ws.send(JSON.stringify({
+//                 'message': '__pong__'
+//            }));
+//        } else {
+//          var message = JSON.parse(event.data);
+//          chat.bubble(message.message, message.username);
+//        }
+//    }
+//
+//
+//    chat.ws.onclose = function (e) {
+//        console.log("Close Code = " + e.code);
+//        console.log("Close Reason = " + e.reason);
+//        if (disconnectflg == false) {
+//            console.log("reconnet start");
+//            chat.ws = null;
+//            chat.reconnect();
+//        }
+//    }
 
     chat.reconnect = function() {
         reconnectflg = true;
@@ -283,4 +330,11 @@ function Chat(host) {
             'username': name
         }));
     }
+    
+    
+    
+    
+    
+    
+     chat.askUsername();
 };
