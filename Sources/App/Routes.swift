@@ -110,8 +110,17 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                 room.connections[u] = ws
                 room.bot("\(u) が参加しました。 👋")
                 
+                
+                pingTimer?.setEventHandler {}
+                pingTimer?.cancel()
+                eventHandler = nil
+                pingTimer = nil
+                
+                
+                
+                
                 pingTimer = DispatchSource.makeTimerSource()
-                pingTimer?.schedule(deadline: .now(), repeating: .seconds(15))  //, leeway:  .seconds(25))
+                pingTimer?.schedule(deadline: .now(), repeating: .seconds(20))  //, leeway:  .seconds(25))
                 eventHandler =  {
                     ws.send("__ping__")
                     print("__ping__")
@@ -132,6 +141,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                 
             }
 //            if let u = username, let m = (json["message"] as? String) {
+            print("username(curent)=\(username)")
             if let u = username, let m = json.message {
                 print("message=\(m)")
                 if m == "disconnect" {
