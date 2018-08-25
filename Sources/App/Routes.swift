@@ -191,8 +191,10 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //            room.connections.removeValue(forKey: u)
         })
         
-        
-        
+        ws0.onError({ (ws, err) in
+            print(err.localizedDescription)
+            room.bot("err: \(err.localizedDescription)")
+        })
 //        ws.onClose = { ws, _, _, _ in
 //            pingTimer?.cancel()
 //            pingTimer = nil
