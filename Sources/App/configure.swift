@@ -12,7 +12,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     /// Register routes to the router
     let router = EngineRouter.default()
     let wss = NIOWebSocketServer.default()  // Vapor3
-    
+//    let r = Room()
     print("server init")
     
      try routes(router,wss)

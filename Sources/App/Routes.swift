@@ -53,7 +53,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
    
 //   wss.get(at: ["chat"], use: <#T##(WebSocket, Request) throws -> ()#>)
     
-    wss.get(at:["chat"], use:{ ws,req in
+    wss.get(at:["chat"], use:{ ws0,req in
         
         
         var eventHandler: (() -> Void)?
@@ -77,7 +77,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //            print("__ping__")
 //        }
 //        pingTimer?.resume()
-//        print("websocket get")
+        print("websocket get")
 
        var username: String? = nil
         
@@ -85,7 +85,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //            username = ""
 //        })
         
-        ws.onText({ (ws, text) in
+        ws0.onText({ (ws, text) in
             
             
 //            ws.send("\(text)")
@@ -176,7 +176,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
        
       
         
-        ws.onCloseCode({ (code) in
+        ws0.onCloseCode({ (code) in
             print("onCloseCode:\(code)")
             pingTimer?.setEventHandler {}
             pingTimer?.cancel()
