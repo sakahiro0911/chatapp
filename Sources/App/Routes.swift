@@ -111,7 +111,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                 room.bot("\(u) が参加しました。 👋")
                 
                 pingTimer = DispatchSource.makeTimerSource()
-                pingTimer?.schedule(deadline: .now(), repeating: .seconds(25))  //, leeway:  .seconds(25))
+                pingTimer?.schedule(deadline: .now(), repeating: .seconds(15))  //, leeway:  .seconds(25))
                 eventHandler =  {
                     ws.send("__ping__")
                     print("__ping__")
