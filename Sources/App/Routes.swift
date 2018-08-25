@@ -194,6 +194,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
         ws0.onError({ (ws, err) in
             print(err.localizedDescription)
             room.bot("err: \(err.localizedDescription)")
+            ws.send("{'message':\(err.localizedDescription)}")
         })
 //        ws.onClose = { ws, _, _, _ in
 //            pingTimer?.cancel()
