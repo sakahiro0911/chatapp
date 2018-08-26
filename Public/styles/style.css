@@ -121,11 +121,13 @@ body {
       width: 30px;
       height: 30px;
       overflow: hidden;
-      margin: 0;
+      margin: 0;s
       padding: 0;
+      object-fit: cover;
       border: 2px solid rgba(255, 255, 255, 0.24); }
       .messages .message .avatar img {
         width: 100%;
+        object-fit: cover;
         height: auto; }
     .messages .message.personal {
       float: right;

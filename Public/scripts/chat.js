@@ -2,6 +2,9 @@ function Chat(host) {
     var chat = this;
     hostname = host;
     loginname = "";
+    myImage = ""
+   
+    users = { saka1: "images/IMG_0052.JPG", saka2: "images/IMG_1533.JPG", saka3: "images/IMG_0045.JPG", qutheory:"images/20823770.png" };
     
     array = [];
     
@@ -14,9 +17,16 @@ function Chat(host) {
     chat.ws;
     chat.askUsername = function() {
         loginname = prompt('ユーザー名を入力して下さい。');
-        
-        $.get('https://api.github.com/users/' + loginname, function(data) {
-              chat.ws = new WebSocket('wss://' + host);
+        Object.keys(users).forEach( function(value) {
+            console.log( value + '：' + this[value] );
+            if (loginname == value) {
+                myImage = this[value];
+            }
+        }, users)
+        if (myImage) {
+   
+//        $.get('https://api.github.com/users/' + loginname, function(data) {
+              chat.ws = new WebSocket('ws://' + host);
               chat.ws.onopen = function() {
                 console.log("onopen");
               
@@ -49,11 +59,16 @@ function Chat(host) {
          
                 chat.join(loginname);
               };
-              
-         }).fail(function() {
+         
+        } else {
+            
+//         }).fail(function() {
                       alert('Invalid username');
                       chat.askUsername();
-                      });
+//                      });
+       }
+        
+        
     }
 //    chat.askUsername();
     
@@ -269,19 +284,27 @@ function Chat(host) {
 
             if (!imageUrl) {
                 // async fetch and update the image
-                $.get('https://api.github.com/users/' + lookup, function(data) {
-                    if (data.avatar_url) {
-                        imageUrl = data.avatar_url;
-                    } else {
-                        imageUrl = 'https://avatars3.githubusercontent.com/u/17364220?v=3&s=200';
-                    }
-
+                Object.keys(users).forEach( function(value) {
+                                           console.log( value + '：' + this[value] );
+                                           if (lookup == value) {
+                                             imageUrl = this[value];
+                                           }
+                                           }, users)
+                
+                
+//                $.get('https://api.github.com/users/' + lookup, function(data) {
+//                    if (data.avatar_url) {
+//                        imageUrl = data.avatar_url;
+//                    } else {
+//                        imageUrl = 'https://avatars3.githubusercontent.com/u/17364220?v=3&s=200';
+//                    }
+//                      imageUrl = 'images/IMG_1534.JPG'; //52
                     $('div.message[data-username=' + lookup + ']')
                         .find('img')
                         .attr('src', imageUrl);
 
                     chat.imageCache[lookup] = imageUrl;
-                });
+//                });
             }
 
             var image = $('<img>')
