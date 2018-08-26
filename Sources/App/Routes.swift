@@ -55,7 +55,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
     
     wss.get(at:["chat"], use:{ ws0,req in
         
-        var ww:WebSocket  = ws0
+//        var ww:WebSocket  = ws0
         
         var eventHandler: (() -> Void)?
         
@@ -108,7 +108,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                 print("username(save)=\(u)")
                 username = u
 //                room.connections[u] = ws
-                 room.connections[u] = ww
+                 room.connections[u] = ws0
                 room.bot("\(u) が参加しました。 👋")
                 
                 
