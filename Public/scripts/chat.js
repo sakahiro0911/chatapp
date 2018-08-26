@@ -26,7 +26,7 @@ function Chat(host) {
         if (myImage) {
    
 //        $.get('https://api.github.com/users/' + loginname, function(data) {
-              chat.ws = new WebSocket('ws://' + host);
+              chat.ws = new WebSocket('wss://' + host);
               chat.ws.onopen = function() {
                 console.log("onopen");
               
