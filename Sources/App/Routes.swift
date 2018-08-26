@@ -13,7 +13,7 @@ struct Chatdata: Codable {  // Codableインターフェースを実装する
 }
 
 //extension WebSocket {
-//    public func optSend(_ data: LosslessDataConvertible, opcode: WebSocketOpcode, promise: Promise<Void>?) {
+    //    public func optSend(_ data: LosslessDataConvertible, opcode: WebSocketOpcode, promise: Promise<Void>?) {
 //        send(data, opcode: opcode, promise: promise)
 //       
 //    }
@@ -55,6 +55,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
     
     wss.get(at:["chat"], use:{ ws0,req in
         
+        var ww:WebSocket  = ws0
         
         var eventHandler: (() -> Void)?
         
@@ -86,8 +87,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //        })
         
         ws0.onText({ (ws, text) in
-            
-            
+                        
 //            ws.send("\(text)")
 //          do {
             
@@ -107,7 +107,8 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
             if let u = json.username {
                 print("username(save)=\(u)")
                 username = u
-                room.connections[u] = ws
+//                room.connections[u] = ws
+                 room.connections[u] = ww
                 room.bot("\(u) が参加しました。 👋")
                 
                 

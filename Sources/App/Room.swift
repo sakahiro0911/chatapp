@@ -53,6 +53,11 @@ class Room {
     }
 
     init() {
+        print("room init")
         connections = [:]
+    }
+    
+    deinit {
+        print("room delnit")
     }
 }
