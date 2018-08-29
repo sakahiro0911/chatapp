@@ -11,7 +11,7 @@ function Chat(host) {
     disconnectflg = false;;
     reconnectflg = false;
     
-    
+    num = -1;	// 受け取ったメッセージの最新インデックス（メッセージ受信でUpdateされる）
     
     
     chat.ws;
@@ -32,28 +32,30 @@ function Chat(host) {
               
               
               chat.ws.onmessage = function(event) {
-              console.log("data=" + event.data);
-              if (event.data == 'disconnect') {
-              console.log("disconnect");
-              chat.ws.close();
-              } else if (event.data == '__ping__') {
-              console.log("ping");
-              chat.ws.send(JSON.stringify({
+                console.log("data=" + event.data);
+                if (event.data == 'disconnect') {
+                  console.log("disconnect");
+                  chat.ws.close();
+                } else if (event.data == '__ping__') {
+                  console.log("ping");
+                  chat.ws.send(JSON.stringify({
                                           'message': '__pong__'
                                           }));
-              } else {
-              var message = JSON.parse(event.data);
-              chat.bubble(message.message, message.username);
-              }
+                } else {
+                  var message = JSON.parse(event.data);
+                  num = message.num;
+                  console.log(message.message + '(' + num + ') save');
+                  chat.bubble(message.message, message.username);
+                }
               }
               chat.ws.onclose = function (e) {
-              console.log("Close Code = " + e.code);
-              console.log("Close Reason = " + e.reason);
-              if (disconnectflg == false) {
-              console.log("reconnet start");
-              chat.ws = null;
-              chat.reconnect();
-              }
+                console.log("Close Code = " + e.code);
+                console.log("Close Reason = " + e.reason);
+                if (disconnectflg == false) {
+                  console.log("reconnet start");
+                  chat.ws = null;
+                  chat.reconnect();
+                }
               }
               
          
@@ -68,26 +70,7 @@ function Chat(host) {
 //                      });
        }
         
-        
     }
-//    chat.askUsername();
-    
-//    chat.ws = new WebSocket('ws://' + host);
-//    chat.ws.onopen = function() {
-//        console.log("onopen");
-//        chat.askUsername();
-//    };
-   
-//    chat.askUsername = function() {
-//        loginname = prompt('ユーザー名を入力して下さい。');
-//
-//        $.get('https://api.github.com/users/' + loginname, function(data) {
-//            chat.join(loginname);
-//        }).fail(function() {
-//            alert('Invalid username');
-//            chat.askUsername();
-//        });
-//    }
 
     chat.imageCache = {};
 
@@ -111,10 +94,7 @@ function Chat(host) {
                  chat.ws.send(JSON.stringify({
                                              'message': 'disconnect'
                                              }));
-                 
-                 
-                 
-//                 chat.ws.close();
+                 num = -1;
                  console.log("beforeunload close");
 //                 alert('切断します');
                  return ;
@@ -122,13 +102,7 @@ function Chat(host) {
  
     
     $(window).on("unload", function(e) {
-//                 chat.ws.send(JSON.stringify({
-//                                             'message': 'disconnect'
-//                                             }));
-//
-                 
-                 
-                 //                 chat.ws.close();
+
                  console.log("unload");
                  //                 alert('切断します');
 //                 return "切断します";
@@ -136,32 +110,8 @@ function Chat(host) {
     
     
     
-//    chat.ws.onmessage = function(event) {
-//        console.log("data=" + event.data);
-//        if (event.data == 'disconnect') {
-//            console.log("disconnect");
-//            chat.ws.close();
-//        } else if (event.data == '__ping__') {
-//            console.log("ping");
-//            chat.ws.send(JSON.stringify({
-//                 'message': '__pong__'
-//            }));
-//        } else {
-//          var message = JSON.parse(event.data);
-//          chat.bubble(message.message, message.username);
-//        }
-//    }
-//
-//
-//    chat.ws.onclose = function (e) {
-//        console.log("Close Code = " + e.code);
-//        console.log("Close Reason = " + e.reason);
-//        if (disconnectflg == false) {
-//            console.log("reconnet start");
-//            chat.ws = null;
-//            chat.reconnect();
-//        }
-//    }
+
+
 
     chat.reconnect = function() {
         reconnectflg = true;
@@ -184,7 +134,8 @@ function Chat(host) {
                               }));
             } else {
                 var message = JSON.parse(event.data);
-                //        console.log('[' + name + '] ' + message);
+                num = message.num;
+                console.log(message.message + '(' + num + ') save');
                 chat.bubble(message.message, message.username);
             }
         };
@@ -211,7 +162,7 @@ function Chat(host) {
             chat.sendmessage(message);
         } else {
             console.log("ready state:" + chat.ws.readyState);
-            setTimeout(function(){chat.sendmessage(message)}, 3000);
+            setTimeout(function(){chat.send(message)}, 6000);
         }
     }
 
@@ -241,11 +192,7 @@ function Chat(host) {
             var lookup = username;
 
             if (lookup == 'Bot') {
-                
-                
-                
-                
-                
+                 
                 if (message.indexOf(loginname) < 0) {
                     var start = message.indexOf("が参加しました。");
                     var end = message.indexOf("が退出しました。");
@@ -270,14 +217,9 @@ function Chat(host) {
                     console.log("u=" + u);
                     //                if (array.indexOf(message))
                 }
-                
-                
-                
-                
-                
-                
+
                 lookup = 'qutheory';
-            }
+            } // if 'Bot' end
             bubble.attr('data-username', lookup);
 
             var imageUrl = chat.imageCache[lookup];
@@ -312,7 +254,7 @@ function Chat(host) {
                 .attr('src', imageUrl);
 
             bubble.append(image);
-        }
+        } //if username end
 
 
         var text = $('<span>')
@@ -349,9 +291,16 @@ function Chat(host) {
 
     chat.join = function(name) {
         console.log("join name=" + name);
-        chat.ws.send(JSON.stringify({
+        if (num < 0) {
+          chat.ws.send(JSON.stringify({
             'username': name
-        }));
+          }));
+        } else {
+          chat.ws.send(JSON.stringify({
+            'username': name,'num':num
+          }));
+        }
+          
     }
     
     

@@ -7,141 +7,106 @@ import Foundation
 let room = Room()
 
 
-struct Chatdata: Codable {  // Codableインターフェースを実装する
-    let username: String?
-    let message: String?
-}
-
-//extension WebSocket {
-    //    public func optSend(_ data: LosslessDataConvertible, opcode: WebSocketOpcode, promise: Promise<Void>?) {
-//        send(data, opcode: opcode, promise: promise)
-//       
-//    }
+//struct Chatdata: Codable {  // Codableインターフェースを実装する
+//    let username: String?
+//    let message: String?
+//    let num: Int?
 //}
+
+
 
 /// Register your application's routes here.
 public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
-    // "It works" page
-//    router.get { req in
-//        return try req.view().render("welcome")
-//    }
-//
-//    // Says hello
-//    router.get("hello", String.parameter) { req -> Future<View> in
-//        return try req.view().render("hello", [
-//            "name": req.parameters.next(String.self)
-//        ])
-//    }
+
     
-//    router.get("hello") { req -> Future<View> in
-//        return try req.view().render("hello", ["name": "Leaf"])
-//    }
+
 
     router.get("/") { req in
          return try req.view().render("welcome")
     }
     
     
-//    router.websocket("foo") { (req, ws) in
-//        ws.onString { websocket, string in
-//            websocket.send(string: string)
-//        }
-//    }
 
-    
-    
    
-//   wss.get(at: ["chat"], use: <#T##(WebSocket, Request) throws -> ()#>)
     
     wss.get(at:["chat"], use:{ ws0,req in
         
-//        var ww:WebSocket  = ws0
         
-        var eventHandler: (() -> Void)?
+//        var eventHandler: (() -> Void)?
         
-        
-        var pingTimer: DispatchSourceTimer? = nil
-////        var username: String? = nil
+//        var pingTimer: DispatchSourceTimer? = nil
 
-//        pingTimer = DispatchSource.makeTimerSource()
-//        pingTimer?.schedule(deadline: .now(), repeating: .seconds(25))  //, leeway:  .seconds(25))
-////        eventHandler =  {
-////            ws.send("__ping__")
-////            print("__ping__")
-////        }
-////        pingTimer?.setEventHandler { try? ws.ping() }    ★ws.send("__ping__")
-////        pingTimer?.setEventHandler(handler: {
-////            eventHandler?()
-////        })
-//        pingTimer?.setEventHandler {
-//            ws.send("__ping__")
-//            print("__ping__")
-//        }
-//        pingTimer?.resume()
         print("websocket get")
 
-       var username: String? = nil
+        var username: String? = nil
         
-//        ws.onText({ (ws, text) in
-//            username = ""
-//        })
         
         ws0.onText({ (ws, text) in
                         
-//            ws.send("\(text)")
-//          do {
-            
-//            print("onText=\(text)")
             let data: Data? = text.data(using: .utf8)
             
           
-//                       let json = try JSONSerialization.jsonObject(with: text!, options: JSONSerialization.ReadingOptions.mutableContainers) as!
-            do {
-//            let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
-//
-                let json = try! JSONDecoder().decode(Chatdata.self, from: data!)
+            do {	// 例外Catch
+            let json = try! JSONDecoder().decode(Chatdata.self, from: data!)
                 
-//                ws.send("json name:\(json.username)")
             
-//             if let u = (json["username"] as? String) {
             if let u = json.username {
                 print("username(save)=\(u)")
                 username = u
-//                room.connections[u] = ws
-                 room.connections[u] = ws0
-                room.bot("\(u) が参加しました。 👋")
-                
-                
-                pingTimer?.setEventHandler {}
-                pingTimer?.cancel()
-                eventHandler = nil
-                pingTimer = nil
+                room.connections.removeValue(forKey: u)//★★★★★★★★★
+                if let num = json.num { // 初回はnumが入らないようにJSを制御
+                  room.send(name: u, messageStr: nil, num:num+1, ws:ws)
                 
                 
                 
-                
-                pingTimer = DispatchSource.makeTimerSource()
-                pingTimer?.schedule(deadline: .now(), repeating: .seconds(20))  //, leeway:  .seconds(25))
-                eventHandler =  {
-                    ws.send("__ping__")
-                    print("__ping__")
+//                    if room.messages.count > num+1 {
+//                      for idx in (num+1)...(room.messages.count-1) {
+//                        var msg = room.messages[idx]
+//                        // 自分以外のメッセージを再送
+//                        if msg.username != u {
+//                          msg.message = msg.message.truncated(to: 256)
+//                          let encoder = JSONEncoder()
+//                          do {
+//                            let senddata = try encoder.encode(msg)
+//                            let json:String = String(data: senddata, encoding: .utf8)!
+//                            print("jsonstr=\(json)")
+//                            try? ws.send(json)
+//                          } catch {
+//                              print(error.localizedDescription)
+//                          }
+//                        }
+//                      }
+//                    }
+                    
+                    
+                        
+            
                 }
-                //        pingTimer?.setEventHandler { try? ws.ping() }    ★ws.send("__ping__")
-                pingTimer?.setEventHandler(handler: {
-                    eventHandler?()
-                })
-                //        pingTimer?.setEventHandler {
-                //            ws.send("__ping__")
-                //            print("__ping__")
-                //        }
-                pingTimer?.resume()
-                print("websocket timer start")
+                room.connections[u] = ws	//★★★★★★★★★
+                room.bot("\(u) が参加しました。 👋")
 
+                        // messagesの排他制御は？？？？★★★★★★★★★★★★★★★★★★★★★★★★★再送中に別の人が送ろうとした場合
                 
+//                pingTimer?.setEventHandler {}
+//                pingTimer?.cancel()
+//                eventHandler = nil
+//                pingTimer = nil
                 
-                
+//                pingTimer = DispatchSource.makeTimerSource()
+//                pingTimer?.schedule(deadline: .now(), repeating: .seconds(30))  //, leeway:  .seconds(25))
+//                eventHandler =  {
+//                    ws.send("__ping__")
+//                    print("__ping__")
+//                }
+                //        pingTimer?.setEventHandler { try? ws.ping() }    ★ws.send("__ping__")
+//                pingTimer?.setEventHandler(handler: {
+//                    eventHandler?()
+//                })
+
+//                pingTimer?.resume()
+//                print("websocket timer start")
+
             }
-//            if let u = username, let m = (json["message"] as? String) {
             print("username(curent)=\(username)")
             if let u = username, let m = json.message {
                 print("message=\(m)")
@@ -149,38 +114,26 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
                     room.bot("\(u) が退出しました。")
                     room.connections.removeValue(forKey: u)
                     print("\(u) disconnect")
-                    pingTimer?.setEventHandler {}
-                    pingTimer?.cancel()
+//                    pingTimer?.setEventHandler {}
+//                    pingTimer?.cancel()
                     //                    pingTimer?.resume()
-                    eventHandler = nil
-                    pingTimer = nil
+//                    eventHandler = nil
+//                    pingTimer = nil
                     ws.send("disconnect")
                 } else if  m == "__pong__" {
                     print("\(u) pong")
                 } else {
-                  room.send(name: u, message: m)
+                  room.send(name: u, messageStr: m)
                 }
             }
-          } catch {
+            } catch {	// 例外Catch
                 ws.send("json error:\(error)")
                 print ("json error")
                 return
-          }
+            }
             
             
             
-//            let json = try JSON(bytes: text.makeBytes())
-
-//            if let u = json.object?["username"]?.string {
-//                username = u
-//                room.connections[u] = ws
-//                room.bot("\(u) has joined. 👋")
-//            }
-//
-//            if let u = username, let m = json.object?["message"]?.string {
-//                room.send(name: u, message: m)
-//            }
-
 
         })
 
@@ -189,11 +142,11 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
         
         ws0.onCloseCode({ (code) in
             print("onCloseCode:\(code)")
-            pingTimer?.setEventHandler {}
-            pingTimer?.cancel()
+//            pingTimer?.setEventHandler {}
+//            pingTimer?.cancel()
             //                    pingTimer?.resume()
-            eventHandler = nil
-            pingTimer = nil
+//            eventHandler = nil
+//            pingTimer = nil
 //            guard let u = username else {
 //                return
 //            }
@@ -205,29 +158,14 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
         ws0.onError({ (ws, err) in
             print(err.localizedDescription)
             room.bot("err: \(err.localizedDescription)")
-            ws.send("{'message':\(err.localizedDescription)}")
+//            ws.send("{'message':\(err.localizedDescription)}")
         })
-//        ws.onClose = { ws, _, _, _ in
-//            pingTimer?.cancel()
-//            pingTimer = nil
-//
-//            guard let u = username else {
-//                return
-//            }
-//
-//            room.bot("\(u) has left")
-//            room.connections.removeValue(forKey: u)
-//        }
+
 
         
     })
 
-    
-    
-    
-    
-    
-    
+
     
     
 }
