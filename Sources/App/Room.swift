@@ -56,9 +56,15 @@ class Room {
                         var msg = messages[idx]
                         if msg.username != name {
 //                          msg.message = msg.message!.truncated(to: 256)
-                          let idx = msg.message!.index(msg.message!.startIndex, offsetBy: 256)
-                          let message2 = String(msg.message![..<idx])
-                          msg.message = message2
+                           
+                            var message2 = msg.message
+                            if msg.message!.count > 256 {
+                                let i = msg.message!.index(msg.message!.startIndex, offsetBy: 256)
+                                message2 = String(msg.message![..<i])
+                            }
+                            msg.message = message2
+                            
+                            
                           do {
                             let encoder = JSONEncoder()
                             let senddata = try encoder.encode(msg)
