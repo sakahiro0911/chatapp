@@ -25,9 +25,12 @@ class Room {
         if num  == 0 {
     
 //            let message:String? = messageStr!.truncated(to: 256)
-            let idx = messageStr!.index(messageStr!.startIndex, offsetBy: 256)
-            let message = String(messageStr![..<idx])
-
+            var message = messageStr
+            if messageStr!.count > 256 {
+              let idx = messageStr!.index(messageStr!.startIndex, offsetBy: 256)
+              message = String(messageStr![..<idx])
+            }
+            
             var record = Chatdata(username:name,message:message,num:nil)
             record.num = messages.count
             messages.append(record)
