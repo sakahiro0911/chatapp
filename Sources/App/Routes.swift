@@ -107,7 +107,7 @@ public func routes(_ router: Router, _ wss: NIOWebSocketServer ) throws {
 //                print("websocket timer start")
 
             }
-            print("username(curent)=\(username)")
+//            print("username(curent)=\(username)")
             if let u = username, let m = json.message {
                 print("message=\(m)")
                 if m == "disconnect" {
