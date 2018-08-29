@@ -162,7 +162,7 @@ function Chat(host) {
             chat.sendmessage(message);
         } else {
             console.log("ready state:" + chat.ws.readyState);
-            setTimeout(function(){chat.send(message)}, 6000);
+            setTimeout(function(){chat.send(message)}, 4000);
         }
     }
 
